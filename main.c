@@ -6,7 +6,7 @@ int main()
     MYSQL * conn=mysql_init(NULL);
     if(conn==NULL)
     {
-        printf("初始化成功\n");
+        printf("初始化失败\n");
         return 1;
     }
 
@@ -33,14 +33,14 @@ int main()
     int ret=mysql_query(conn,insert_sql);
     if(ret!=0)
     {
-        printf("插入失败，error:%s\n",mysql_error(conn));
+        printf("插入失败,error:%s\n",mysql_error(conn));
         mysql_close(conn);
         return 1;
     }
     mysql_query(conn,"COMMIT");
     printf("数据插入成功\n");
 
-    char* select_sql="SELECT id,name,age,major,create_time FROM student";
+    char* select_sql="SELECT id,name,age,major,create_time FROM student;";
     mysql_query(conn,select_sql);
 
     MYSQL_RES* res=mysql_store_result(conn);
@@ -48,6 +48,23 @@ int main()
 
     printf("id\tname\tage\tmajor\tcreate_time\n");
     
+    while((row=mysql_fetch_row(res)))
+    {
+        printf("%s\t%s\t%s\t%s\t%s\n",row[0],row[1],row[2],row[3],row[4]);
+    }
+
+    char* update_sql="UPDATE student SET major='计算机科学' WHERE id=1;";
+    mysql_query(conn,update_sql);
+
+    char* delete_sql="DELETE FROM student WHERE id=6;";
+    mysql_query(conn,delete_sql);
+
+    select_sql="SELECT id,name,age,major,create_time FROM student;";
+    mysql_query(conn,select_sql);
+
+    printf("id\tname\tage\tmajor\tcreate_time\n");
+
+    res=mysql_store_result(conn);
     while((row=mysql_fetch_row(res)))
     {
         printf("%s\t%s\t%s\t%s\t%s\n",row[0],row[1],row[2],row[3],row[4]);
